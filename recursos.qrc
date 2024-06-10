@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>Images/logo.png</file>
+    <file>Images/dashboard.png</file>
+    <file>Images/dashboard_white.png</file>
+    <file>Images/image.png</file>
+    <file>Images/new_organizer.png</file>
+    <file>Images/new_organizer_white.png</file>
+    <file>Images/search.png</file>
+  </qresource>
+</RCC>
