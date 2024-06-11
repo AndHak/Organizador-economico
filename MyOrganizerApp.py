@@ -171,6 +171,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         else:
             self.edit_save_button.setText("Editar")
             self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
             nombre_tabla = self.lineedit_nombretabla.text() if hasattr(self, 'lineedit_nombretabla') else ''
             if nombre_tabla in self.tablas:
                 self.tablas[nombre_tabla] = self.tableView.model()._data

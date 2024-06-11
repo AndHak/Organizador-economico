@@ -551,7 +551,7 @@ QPushButton:checked {
           <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="Dashboard_page">
           <layout class="QGridLayout" name="gridLayout_9">
@@ -1523,6 +1523,9 @@ QPushButton:checked {
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_organizador">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -1530,7 +1533,7 @@ QPushButton:checked {
                   </size>
                  </property>
                  <property name="editable">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -1547,6 +1550,9 @@ QPushButton:checked {
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_suborganizador">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -1554,7 +1560,7 @@ QPushButton:checked {
                   </size>
                  </property>
                  <property name="editable">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -1972,6 +1978,25 @@ QPushButton:pressed {
            <property name="verticalSpacing">
             <number>15</number>
            </property>
+           <item row="1" column="0">
+            <widget class="QPlainTextEdit" name="plainTextEdit_support">
+             <property name="styleSheet">
+              <string notr="true">QPlainTextEdit {
+    background-color: rgba(103, 178, 98, 180); 
+    font-size: 17px;
+    padding: 30px;
+    border: 2px solid gray;
+    border-radius: 5px;
+}
+
+QPlainTextEdit:focus {
+    background-color: rgba(103, 178, 98, 150);
+    font-size: 18px;
+    border: 2px solid blue;
+}</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <widget class="QListWidget" name="list_apoyo">
              <property name="minimumSize">
@@ -2025,22 +2050,64 @@ QListWidget {
              </item>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPlainTextEdit" name="plainTextEdit_support">
+           <item row="2" column="0">
+            <widget class="QPushButton" name="enviar_buttton_apoyo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>110</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Roboto</family>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+               <stylestrategy>PreferAntialias</stylestrategy>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
-              <string notr="true">QPlainTextEdit {
+              <string notr="true">QPushButton {
     background-color: rgba(103, 178, 98, 180); 
     font-size: 17px;
-    padding: 30px;
-    border: 2px solid gray;
+    padding: 15px;
+    border: 1px solid gray;
     border-radius: 5px;
+    color: black;
 }
 
-QPlainTextEdit:focus {
+QPushButton:hover {
     background-color: rgba(103, 178, 98, 150);
     font-size: 18px;
-    border: 2px solid blue;
-}</string>
+}
+
+QPushButton:pressed {
+    background-color: rgba(103, 178, 98, 200);
+    font-size: 18px;
+    border: none;
+}
+</string>
+             </property>
+             <property name="text">
+              <string>Enviar</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

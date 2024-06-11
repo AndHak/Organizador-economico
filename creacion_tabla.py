@@ -26,9 +26,17 @@ class PandasModel(QAbstractTableModel):
         if index.isValid():
             if role == Qt.EditRole:
                 self._data.iloc[index.row(), index.column()] = value
-                self.dataChanged.emit(index, index)
+                self.dataChanged.emit(index, index, (Qt.DisplayRole, Qt.EditRole))
                 return True
         return False
 
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return self._data.columns[section]
+            elif orientation == Qt.Vertical:
+                return str(self._data.index[section])
+        return None
+
     def flags(self, index):
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable

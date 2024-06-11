@@ -834,8 +834,9 @@ class Ui_MainWindow(object):
 
         self.combobox_organizador = QComboBox(self.nuevo_organizador_page)
         self.combobox_organizador.setObjectName(u"combobox_organizador")
+        self.combobox_organizador.setEnabled(False)
         self.combobox_organizador.setMinimumSize(QSize(0, 35))
-        self.combobox_organizador.setEditable(True)
+        self.combobox_organizador.setEditable(False)
 
         self.verticalLayout_8.addWidget(self.combobox_organizador)
 
@@ -851,8 +852,9 @@ class Ui_MainWindow(object):
 
         self.combobox_suborganizador = QComboBox(self.nuevo_organizador_page)
         self.combobox_suborganizador.setObjectName(u"combobox_suborganizador")
+        self.combobox_suborganizador.setEnabled(False)
         self.combobox_suborganizador.setMinimumSize(QSize(0, 35))
-        self.combobox_suborganizador.setEditable(True)
+        self.combobox_suborganizador.setEditable(False)
 
         self.verticalLayout_9.addWidget(self.combobox_suborganizador)
 
@@ -1066,6 +1068,24 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setVerticalSpacing(15)
         self.gridLayout_2.setContentsMargins(100, 100, 100, 100)
+        self.plainTextEdit_support = QPlainTextEdit(self.suppot_page)
+        self.plainTextEdit_support.setObjectName(u"plainTextEdit_support")
+        self.plainTextEdit_support.setStyleSheet(u"QPlainTextEdit {\n"
+"    background-color: rgba(103, 178, 98, 180); \n"
+"    font-size: 17px;\n"
+"    padding: 30px;\n"
+"    border: 2px solid gray;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPlainTextEdit:focus {\n"
+"    background-color: rgba(103, 178, 98, 150);\n"
+"    font-size: 18px;\n"
+"    border: 2px solid blue;\n"
+"}")
+
+        self.gridLayout_2.addWidget(self.plainTextEdit_support, 1, 0, 1, 1)
+
         self.list_apoyo = QListWidget(self.suppot_page)
         QListWidgetItem(self.list_apoyo)
         QListWidgetItem(self.list_apoyo)
@@ -1096,23 +1116,37 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.list_apoyo, 0, 0, 1, 1)
 
-        self.plainTextEdit_support = QPlainTextEdit(self.suppot_page)
-        self.plainTextEdit_support.setObjectName(u"plainTextEdit_support")
-        self.plainTextEdit_support.setStyleSheet(u"QPlainTextEdit {\n"
+        self.enviar_buttton_apoyo = QPushButton(self.suppot_page)
+        self.enviar_buttton_apoyo.setObjectName(u"enviar_buttton_apoyo")
+        sizePolicy1.setHeightForWidth(self.enviar_buttton_apoyo.sizePolicy().hasHeightForWidth())
+        self.enviar_buttton_apoyo.setSizePolicy(sizePolicy1)
+        self.enviar_buttton_apoyo.setMinimumSize(QSize(200, 50))
+        self.enviar_buttton_apoyo.setMaximumSize(QSize(110, 40))
+        self.enviar_buttton_apoyo.setFont(font2)
+        self.enviar_buttton_apoyo.setCursor(QCursor(Qt.PointingHandCursor))
+        self.enviar_buttton_apoyo.setStyleSheet(u"QPushButton {\n"
 "    background-color: rgba(103, 178, 98, 180); \n"
 "    font-size: 17px;\n"
-"    padding: 30px;\n"
-"    border: 2px solid gray;\n"
+"    padding: 15px;\n"
+"    border: 1px solid gray;\n"
 "    border-radius: 5px;\n"
+"    color: black;\n"
 "}\n"
 "\n"
-"QPlainTextEdit:focus {\n"
+"QPushButton:hover {\n"
 "    background-color: rgba(103, 178, 98, 150);\n"
 "    font-size: 18px;\n"
-"    border: 2px solid blue;\n"
-"}")
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgba(103, 178, 98, 200);\n"
+"    font-size: 18px;\n"
+"    border: none;\n"
+"}\n"
+"")
+        self.enviar_buttton_apoyo.setCheckable(True)
 
-        self.gridLayout_2.addWidget(self.plainTextEdit_support, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.enviar_buttton_apoyo, 2, 0, 1, 1)
 
         self.stackedWidget.addWidget(self.suppot_page)
         self.about_us_page = QWidget()
@@ -1242,7 +1276,7 @@ class Ui_MainWindow(object):
         self.dashboard_1.toggled.connect(self.dashboard_2.setChecked)
         self.dashboard_2.toggled.connect(self.dashboard_1.setChecked)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
         self.tab_widget.setCurrentIndex(0)
 
 
@@ -1350,6 +1384,7 @@ class Ui_MainWindow(object):
         ___qlistwidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Otro", None));
         self.list_apoyo.setSortingEnabled(__sortingEnabled1)
 
+        self.enviar_buttton_apoyo.setText(QCoreApplication.translate("MainWindow", u"Enviar", None))
         self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
