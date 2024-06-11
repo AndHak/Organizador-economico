@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="icons">
+    <file>Images/icons8-trash-48.png</file>
+    <file>Images/icons8-setting-50 (1).png</file>
+    <file>Images/icons8-setting-50.png</file>
+    <file>Images/icons8-off-91.png</file>
+    <file>Images/icons8-menu-64.png</file>
     <file>Images/logo.png</file>
     <file>Images/dashboard.png</file>
     <file>Images/dashboard_white.png</file>
