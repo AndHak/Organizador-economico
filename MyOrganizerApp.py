@@ -3,7 +3,7 @@ from creacion_tabla import PandasModel
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-import pandas as pd7
+import pandas as pd
 import webbrowser
 
 
