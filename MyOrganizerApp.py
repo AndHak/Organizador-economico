@@ -3,7 +3,8 @@ from creacion_tabla import PandasModel
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-import pandas as pd
+import pandas as pd7
+import webbrowser
 
 
 class MyOrganizerApp(QMainWindow, Ui_MainWindow):
@@ -41,6 +42,9 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         # Estructura para almacenar las tablas creadas
         self.tablas = {}
+
+        #conexion correo 
+        
 
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
@@ -178,3 +182,29 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
     def mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
+
+    def enviar_correo(self):
+        seleccionado = self.list_apoyo.currentItem()
+        texto = self.plainTextEdit_support.toPlainText().strip()
+        texto_a_enviar = self.plainTextEdit_support.toPlainText()
+
+        if seleccionado:
+            asunto = seleccionado.text()
+            if texto:
+                destinatario = "afmartinez23a@udenar.edu.co"
+                # Crear el enlace mailto
+                mailto_link = f"mailto:{destinatario}?subject={asunto}&body={texto_a_enviar}"
+
+                mailto_link = mailto_link.replace(' ', '%20')
+
+                # Abrir el enlace en el navegador predeterminado
+                webbrowser.open(mailto_link)
+                self.plainTextEdit_support.clear()
+
+            else:
+                self.mostrar_warning("El texto del recuadro inferior no debe estar vacio")
+        else:
+            self.mostrar_warning("Debes seleccionar un asunto de la lista")
+    
+    def mostrar_warning(self, message):
+        QMessageBox.warning(self, "Advertencia", message)
