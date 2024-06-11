@@ -7,6 +7,7 @@ import sys
 from MyOrganizerApp import MyOrganizerApp
 
 app = QApplication(sys.argv)
+app.setStyle("windowsvista")
 
 window = MyOrganizerApp()
 
