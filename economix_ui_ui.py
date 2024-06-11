@@ -21,8 +21,9 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QLineEdit, QListView, QListWidget, QListWidgetItem,
     QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
     QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QSpinBox, QStackedWidget, QTabWidget, QTextBrowser,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+    QSpinBox, QStackedWidget, QTabWidget, QTableView,
+    QTextBrowser, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget)
 import recurses_rc_rc
 
 class Ui_MainWindow(object):
@@ -317,7 +318,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 249, 229))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 933, 461))
         self.gridLayout_8 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
         self.gridLayout_8.setHorizontalSpacing(15)
@@ -378,15 +379,10 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setVerticalSpacing(0)
         self.gridLayout_6.setContentsMargins(15, 15, 15, 15)
-        self.listView = QListView(self.tab_seleccted)
-        self.listView.setObjectName(u"listView")
-
-        self.gridLayout_6.addWidget(self.listView, 1, 0, 1, 1)
-
-        self.lineEdit = QLineEdit(self.tab_seleccted)
-        self.lineEdit.setObjectName(u"lineEdit")
-        self.lineEdit.setEnabled(True)
-        self.lineEdit.setStyleSheet(u"QLineEdit {\n"
+        self.lineedit_nombretabla = QLineEdit(self.tab_seleccted)
+        self.lineedit_nombretabla.setObjectName(u"lineedit_nombretabla")
+        self.lineedit_nombretabla.setEnabled(True)
+        self.lineedit_nombretabla.setStyleSheet(u"QLineEdit {\n"
 "    background-color: rgb(103, 178, 98); /* Color de fondo */\n"
 "    border-top-left-radius: 20px; /* Radio de borde superior izquierdo */\n"
 "    border-top-right-radius: 20px; /* Radio de borde superior derecho */\n"
@@ -397,10 +393,15 @@ class Ui_MainWindow(object):
 "    border: 1px solid gray; /* Borde del line edit */\n"
 "}\n"
 "")
-        self.lineEdit.setMaxLength(30)
-        self.lineEdit.setReadOnly(True)
+        self.lineedit_nombretabla.setMaxLength(30)
+        self.lineedit_nombretabla.setReadOnly(True)
 
-        self.gridLayout_6.addWidget(self.lineEdit, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.lineedit_nombretabla, 0, 0, 1, 1)
+
+        self.tableView = QTableView(self.tab_seleccted)
+        self.tableView.setObjectName(u"tableView")
+
+        self.gridLayout_6.addWidget(self.tableView, 1, 0, 1, 1)
 
         self.tab_widget.addTab(self.tab_seleccted, "")
         self.tab_total = QWidget()
@@ -1241,7 +1242,7 @@ class Ui_MainWindow(object):
         self.dashboard_1.toggled.connect(self.dashboard_2.setChecked)
         self.dashboard_2.toggled.connect(self.dashboard_1.setChecked)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         self.tab_widget.setCurrentIndex(0)
 
 
@@ -1272,7 +1273,7 @@ class Ui_MainWindow(object):
         self.label_10.setAccessibleDescription("")
 #endif // QT_CONFIG(accessibility)
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Tus organizadores", None))
-        self.lineEdit.setText("")
+        self.lineedit_nombretabla.setText("")
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_seleccted), QCoreApplication.translate("MainWindow", u"Organizador seleccionado", None))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_total), QCoreApplication.translate("MainWindow", u"Todos los organizadores", None))
         ___qtreewidgetitem = self.treeWidget_organizadores.headerItem()

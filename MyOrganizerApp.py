@@ -1,7 +1,10 @@
 from economix_ui_ui import Ui_MainWindow
+from creacion_tabla import PandasModel
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+import pandas as pd
+
 
 class MyOrganizerApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -10,7 +13,6 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("SideBar Menu")
 
         self.icon_name_widget.setHidden(True)
-
         self.dashboard_1.clicked.connect(self.switch_to_dashboardPage)
         self.dashboard_2.clicked.connect(self.switch_to_dashboardPage)
 
@@ -31,20 +33,30 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.combobox_organizador.currentIndexChanged.connect(self.mostrar_hijos_por_organizador)
 
         self.agragar_nuevo_organizador_button.clicked.connect(self.evaluar_nuevo_organizador)
+        self.edit_save_button.clicked.connect(self.edit_all)
+
+        self.treeWidget_organizadores.itemSelectionChanged.connect(self.mostrar_tabla_seleccionada)
 
         self.dashboard_1.click()
 
+        # Estructura para almacenar las tablas creadas
+        self.tablas = {}
+
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
+
     def switch_to_newPage(self):
         self.stackedWidget.setCurrentWidget(self.nuevo_organizador_page)
+
     def switch_to_supportPage(self):
         self.stackedWidget.setCurrentWidget(self.suppot_page)
+
     def switch_to_aboutusPage(self):
         self.stackedWidget.setCurrentWidget(self.about_us_page)
+
     def switch_to_settingsPage(self):
         self.stackedWidget.setCurrentWidget(self.Settings_page)
-    
+
     def mostar_creacion_de_sub_tabla(self):
         if self.checkbox_organizador.isChecked():
             self.checkbox_suborganizador.show()
@@ -67,7 +79,6 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             self.combobox_suborganizador.clear()
             self.combobox_suborganizador.addItem("No Seleccionado")
 
-
     def actualizar_combobox_organizadores(self):
         self.combobox_organizador.clear()
         for i in range(self.treeWidget_organizadores.topLevelItemCount()):
@@ -87,7 +98,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                         for j in range(organizador.childCount()):
                             child = organizador.child(j)
                             self.combobox_suborganizador.addItem(child.text(0))
-    
+
     def evaluar_nuevo_organizador(self):
         nombre = self.lineedit_nuevoorganizaor.text()
         if not nombre.strip():
@@ -103,42 +114,66 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         if self.checkbox_suborganizador.isChecked():
             organizador_padre = self.combobox_suborganizador.currentText()
 
+        nuevo_organizador = QTreeWidgetItem([nombre])
+        self.tablas[nombre] = self.crear_nueva_tabla()
 
         if not organizador_abuelo and not organizador_padre:
-            self.treeWidget_organizadores.addTopLevelItem(QTreeWidgetItem([nombre]))
-            return
-
-        item_abuelo = None
-        if organizador_abuelo:
-            for i in range(self.treeWidget_organizadores.topLevelItemCount()):
-                item = self.treeWidget_organizadores.topLevelItem(i)
-                if item.text(0) == organizador_abuelo:
-                    item_abuelo = item
-                    break
-
-        if organizador_abuelo and not organizador_padre:
-            if item_abuelo:
-                nuevo_organizador = QTreeWidgetItem([nombre])
-                item_abuelo.addChild(nuevo_organizador)
-            else:
-                print("El organizador no se encontro")
-            return
-
-        if organizador_abuelo and organizador_padre:
-            if item_abuelo:
-                item_padre = None
-                for i in range(item_abuelo.childCount()):
-                    item = item_abuelo.child(i)
-                    if item.text(0) == organizador_padre:
-                        item_padre = item
+            self.treeWidget_organizadores.addTopLevelItem(nuevo_organizador)
+        else:
+            item_abuelo = None
+            if organizador_abuelo:
+                for i in range(self.treeWidget_organizadores.topLevelItemCount()):
+                    item = self.treeWidget_organizadores.topLevelItem(i)
+                    if item.text(0) == organizador_abuelo:
+                        item_abuelo = item
                         break
-                
-                if item_padre:
-                    nuevo_organizador = QTreeWidgetItem([nombre])
-                    item_padre.addChild(nuevo_organizador)
-                    return
 
-        
+            if organizador_abuelo and not organizador_padre:
+                if item_abuelo:
+                    item_abuelo.addChild(nuevo_organizador)
+                else:
+                    self.mostrar_error("El organizador abuelo seleccionado no se encontró.")
+            elif organizador_abuelo and organizador_padre:
+                if item_abuelo:
+                    item_padre = None
+                    for i in range(item_abuelo.childCount()):
+                        item = item_abuelo.child(i)
+                        if item.text(0) == organizador_padre:
+                            item_padre = item
+                            break
+                    
+                    if item_padre:
+                        item_padre.addChild(nuevo_organizador)
+                    else:
+                        self.mostrar_error("El organizador padre seleccionado no se encontró dentro del organizador abuelo.")
+                else:
+                    self.mostrar_error("El organizador abuelo seleccionado no se encontró.")
+
+    def crear_nueva_tabla(self):
+        # Crea un DataFrame de pandas con las columnas especificadas
+        return pd.DataFrame(columns=['Descripción', 'Fecha', 'Hora', 'Valor'])
+
+    def mostrar_tabla_seleccionada(self):
+        selected_item = self.treeWidget_organizadores.currentItem()
+        if selected_item:
+            nombre_tabla = selected_item.text(0)
+            if nombre_tabla in self.tablas:
+                # Verifica que lineedit_nombretabla esté definido
+                if hasattr(self, 'lineedit_nombretabla'):
+                    self.lineedit_nombretabla.setText(nombre_tabla)
+                model = PandasModel(self.tablas[nombre_tabla])
+                self.tableView.setModel(model)
+
+    def edit_all(self):
+        if self.edit_save_button.text() == "Editar":
+            self.edit_save_button.setText("Guardar")
+            self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+        else:
+            self.edit_save_button.setText("Editar")
+            self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            nombre_tabla = self.lineedit_nombretabla.text() if hasattr(self, 'lineedit_nombretabla') else ''
+            if nombre_tabla in self.tablas:
+                self.tablas[nombre_tabla] = self.tableView.model()._data
+
     def mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
-        
