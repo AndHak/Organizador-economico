@@ -45,10 +45,10 @@ class Ui_MainWindow(object):
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setLayoutDirection(Qt.LeftToRight)
-        self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setSpacing(0)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_7 = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_7.setSpacing(0)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.icon_only_widget = QWidget(self.centralwidget)
         self.icon_only_widget.setObjectName(u"icon_only_widget")
         self.icon_only_widget.setStyleSheet(u"QWidget {\n"
@@ -144,7 +144,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.singout_1)
 
 
-        self.gridLayout.addWidget(self.icon_only_widget, 0, 0, 1, 1)
+        self.horizontalLayout_7.addWidget(self.icon_only_widget)
 
         self.icon_name_widget = QWidget(self.centralwidget)
         self.icon_name_widget.setObjectName(u"icon_name_widget")
@@ -252,7 +252,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.singout_2)
 
 
-        self.gridLayout.addWidget(self.icon_name_widget, 0, 1, 1, 1)
+        self.horizontalLayout_7.addWidget(self.icon_name_widget)
 
         self.main_menu = QWidget(self.centralwidget)
         self.main_menu.setObjectName(u"main_menu")
@@ -319,10 +319,21 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 933, 461))
-        self.gridLayout_8 = QGridLayout(self.scrollAreaWidgetContents)
-        self.gridLayout_8.setObjectName(u"gridLayout_8")
-        self.gridLayout_8.setHorizontalSpacing(15)
-        self.gridLayout_8.setContentsMargins(15, 15, 15, 15)
+        self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.agregar_organizador = QPushButton(self.scrollAreaWidgetContents)
+        self.agregar_organizador.setObjectName(u"agregar_organizador")
+        self.agregar_organizador.setCursor(QCursor(Qt.PointingHandCursor))
+        self.agregar_organizador.setStyleSheet(u"border: none;")
+        icon5 = QIcon()
+        icon5.addFile(u":/icons/Images/icons8-plus-math-30.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.agregar_organizador.setIcon(icon5)
+        self.agregar_organizador.setIconSize(QSize(40, 40))
+        self.agregar_organizador.setCheckable(True)
+        self.agregar_organizador.setAutoExclusive(False)
+
+        self.gridLayout.addWidget(self.agregar_organizador, 1, 2, 1, 1)
+
         self.tab_widget = QTabWidget(self.scrollAreaWidgetContents)
         self.tab_widget.setObjectName(u"tab_widget")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -416,7 +427,7 @@ class Ui_MainWindow(object):
 
         self.tab_widget.addTab(self.tab_total, "")
 
-        self.gridLayout_8.addWidget(self.tab_widget, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.tab_widget, 0, 3, 2, 1)
 
         self.treeWidget_organizadores = QTreeWidget(self.scrollAreaWidgetContents)
         __qtreewidgetitem = QTreeWidgetItem(self.treeWidget_organizadores)
@@ -467,7 +478,20 @@ class Ui_MainWindow(object):
 "\n"
 "")
 
-        self.gridLayout_8.addWidget(self.treeWidget_organizadores, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.treeWidget_organizadores, 0, 0, 1, 3)
+
+        self.eliminar_organizador = QPushButton(self.scrollAreaWidgetContents)
+        self.eliminar_organizador.setObjectName(u"eliminar_organizador")
+        self.eliminar_organizador.setCursor(QCursor(Qt.PointingHandCursor))
+        self.eliminar_organizador.setStyleSheet(u"border: none;")
+        icon6 = QIcon()
+        icon6.addFile(u":/icons/Images/icons8-subtract-30.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.eliminar_organizador.setIcon(icon6)
+        self.eliminar_organizador.setIconSize(QSize(40, 40))
+        self.eliminar_organizador.setCheckable(True)
+        self.eliminar_organizador.setAutoExclusive(False)
+
+        self.gridLayout.addWidget(self.eliminar_organizador, 1, 1, 1, 1)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -481,9 +505,9 @@ class Ui_MainWindow(object):
         self.eliminar_tabla_button.setObjectName(u"eliminar_tabla_button")
         self.eliminar_tabla_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.eliminar_tabla_button.setStyleSheet(u"border: none;")
-        icon5 = QIcon()
-        icon5.addFile(u":/icons/Images/icons8-trash-48.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.eliminar_tabla_button.setIcon(icon5)
+        icon7 = QIcon()
+        icon7.addFile(u":/icons/Images/icons8-trash-48.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.eliminar_tabla_button.setIcon(icon7)
         self.eliminar_tabla_button.setIconSize(QSize(40, 40))
         self.eliminar_tabla_button.setCheckable(True)
         self.eliminar_tabla_button.setAutoExclusive(False)
@@ -1242,7 +1266,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addWidget(self.stackedWidget)
 
 
-        self.gridLayout.addWidget(self.main_menu, 0, 2, 1, 1)
+        self.horizontalLayout_7.addWidget(self.main_menu)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
@@ -1276,7 +1300,7 @@ class Ui_MainWindow(object):
         self.dashboard_1.toggled.connect(self.dashboard_2.setChecked)
         self.dashboard_2.toggled.connect(self.dashboard_1.setChecked)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(0)
         self.tab_widget.setCurrentIndex(0)
 
 
@@ -1307,6 +1331,7 @@ class Ui_MainWindow(object):
         self.label_10.setAccessibleDescription("")
 #endif // QT_CONFIG(accessibility)
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Tus organizadores", None))
+        self.agregar_organizador.setText("")
         self.lineedit_nombretabla.setText("")
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_seleccted), QCoreApplication.translate("MainWindow", u"Organizador seleccionado", None))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_total), QCoreApplication.translate("MainWindow", u"Todos los organizadores", None))
@@ -1341,6 +1366,7 @@ class Ui_MainWindow(object):
         ___qtreewidgetitem12.setText(0, QCoreApplication.translate("MainWindow", u"Brasil", None));
         self.treeWidget_organizadores.setSortingEnabled(__sortingEnabled)
 
+        self.eliminar_organizador.setText("")
         self.eliminar_tabla_button.setText("")
         self.nueva_columna_button.setText(QCoreApplication.translate("MainWindow", u"Nueva Columna", None))
         self.nueva_fila_button.setText(QCoreApplication.translate("MainWindow", u"Nueva Fila", None))

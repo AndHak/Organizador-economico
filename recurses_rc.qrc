@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>Images/icons8-plus-math-30.png</file>
+    <file>Images/icons8-subtract-30.png</file>
     <file>Images/icons8-trash-48.png</file>
     <file>Images/icons8-setting-50 (1).png</file>
     <file>Images/icons8-setting-50.png</file>
