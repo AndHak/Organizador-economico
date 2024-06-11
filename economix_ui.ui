@@ -609,8 +609,8 @@ QPushButton:checked {
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout">
-               <item row="1" column="2">
-                <widget class="QPushButton" name="agregar_organizador">
+               <item row="1" column="4">
+                <widget class="QPushButton" name="agregar_organizador_button">
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
@@ -626,8 +626,8 @@ QPushButton:checked {
                  </property>
                  <property name="iconSize">
                   <size>
-                   <width>40</width>
-                   <height>40</height>
+                   <width>30</width>
+                   <height>30</height>
                   </size>
                  </property>
                  <property name="checkable">
@@ -638,7 +638,36 @@ QPushButton:checked {
                  </property>
                 </widget>
                </item>
-               <item row="0" column="3" rowspan="2">
+               <item row="1" column="2">
+                <widget class="QPushButton" name="agregar_nueva_categoria_button">
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">border: none;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="recurses_rc.qrc">
+                   <normaloff>:/icons/Images/icons8-new-folder-48.png</normaloff>:/icons/Images/icons8-new-folder-48.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>30</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="autoExclusive">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5" rowspan="2">
                 <widget class="QTabWidget" name="tab_widget">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -783,7 +812,7 @@ QTabBar::tab:selected:hover {
                  </widget>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="3">
+               <item row="0" column="0" colspan="5">
                 <widget class="QTreeWidget" name="treeWidget_organizadores">
                  <property name="styleSheet">
                   <string notr="true">QTreeView {
@@ -887,8 +916,8 @@ QHeaderView::section {
                  </item>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QPushButton" name="eliminar_organizador">
+               <item row="1" column="3">
+                <widget class="QPushButton" name="eliminar_organizador_button">
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
@@ -904,8 +933,8 @@ QHeaderView::section {
                  </property>
                  <property name="iconSize">
                   <size>
-                   <width>40</width>
-                   <height>40</height>
+                   <width>30</width>
+                   <height>30</height>
                   </size>
                  </property>
                  <property name="checkable">
