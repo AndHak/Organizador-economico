@@ -1,9 +1,10 @@
+from turtle import pd
 from economix_ui_ui import Ui_MainWindow
 from creacion_tabla import PandasModel
 from PySide6.QtWidgets import *
-from PySide6.QtCore import *
+from PySide6.QtCore import * 
 from PySide6.QtGui import *
-import pandas as pd
+import pandas as pd7
 import webbrowser
 
 
@@ -44,6 +45,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.tablas = {}
 
         #conexion correo 
+        self.enviar_buttton_apoyo.clicked.connect(self.enviar_correo)
         
 
     def switch_to_dashboardPage(self):
@@ -171,14 +173,13 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
             self.edit_save_button.setText("Guardar")
-            self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+            self.tableView.setEditTriggers(QAbstractItemView.doubleClicked | QAbstractItemView.SelectedDlicked)
         else:
             self.edit_save_button.setText("Editar")
-            self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
+            self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers) # type: ignore
             nombre_tabla = self.lineedit_nombretabla.text() if hasattr(self, 'lineedit_nombretabla') else ''
             if nombre_tabla in self.tablas:
-                self.tablas[nombre_tabla] = self.tableView.model()._data
+                self.tablas[nombre_tabla] = self.tableView.model()._data # type: ignore
 
     def mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
