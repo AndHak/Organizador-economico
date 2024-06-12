@@ -3,8 +3,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
+
 class PandasModel(QAbstractTableModel):
-    def __init__(self, columnas, filas, df=pd.DataFrame(), parent=None):
+    def __init__(self, df=pd.DataFrame(), parent=None):
         QAbstractTableModel.__init__(self, parent)
         self._data = df
 
@@ -25,13 +26,16 @@ class PandasModel(QAbstractTableModel):
             col_name = self._data.columns[index.column()]
             try:
                 if col_name == 'Fecha':
-                    pd.to_datetime(value)  # Validar fecha
+                    if value.strip() != "":
+                        pd.to_datetime(value, format='%d/%m/%Y')  # Validar fecha
                 elif col_name == 'Hora':
-                    pd.to_datetime(value, format='%H:%M')  # Validar hora
+                    if value.strip() != "":
+                        pd.to_datetime(value, format='%H:%M')  # Validar hora
                 elif col_name == 'Valor':
-                    int(value)  
+                    if value.strip() != "":
+                        float(value)  # Validar float o int
             except ValueError:
-                return False
+                return False  # Valor no válido
 
             self._data.iloc[index.row(), index.column()] = value
             self.dataChanged.emit(index, index, (Qt.DisplayRole, Qt.EditRole))
@@ -44,8 +48,6 @@ class PandasModel(QAbstractTableModel):
                 return self._data.columns[section]
             elif orientation == Qt.Vertical:
                 return str(section + 1)
-        if role == Qt.EditRole and orientation == Qt.Horizontal and section >= 4:
-            return self._data.columns[section]
         return None
 
     def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
@@ -57,8 +59,5 @@ class PandasModel(QAbstractTableModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsSelectable | Qt.ItemIsEnabled
-        col_name = self._data.columns[index.column()]
-        if col_name in ['Descripción', 'Fecha', 'Hora', 'Valor']:
             return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable

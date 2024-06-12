@@ -551,7 +551,7 @@ QPushButton:checked {
           <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="Dashboard_page">
           <layout class="QGridLayout" name="gridLayout_9">
@@ -1681,7 +1681,7 @@ QPushButton:checked {
               <item row="1" column="0">
                <widget class="QCheckBox" name="checkbox_fecha">
                 <property name="enabled">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                 <property name="text">
                  <string>Fecha</string>
@@ -1697,7 +1697,7 @@ QPushButton:checked {
               <item row="2" column="0">
                <widget class="QCheckBox" name="checkbox_hora">
                 <property name="enabled">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                 <property name="text">
                  <string>Hora</string>

@@ -923,7 +923,7 @@ class Ui_MainWindow(object):
 
         self.checkbox_fecha = QCheckBox(self.groupBox)
         self.checkbox_fecha.setObjectName(u"checkbox_fecha")
-        self.checkbox_fecha.setEnabled(True)
+        self.checkbox_fecha.setEnabled(False)
         self.checkbox_fecha.setCheckable(True)
         self.checkbox_fecha.setChecked(True)
 
@@ -931,7 +931,7 @@ class Ui_MainWindow(object):
 
         self.checkbox_hora = QCheckBox(self.groupBox)
         self.checkbox_hora.setObjectName(u"checkbox_hora")
-        self.checkbox_hora.setEnabled(True)
+        self.checkbox_hora.setEnabled(False)
         self.checkbox_hora.setCheckable(True)
         self.checkbox_hora.setChecked(True)
 
@@ -1313,7 +1313,7 @@ class Ui_MainWindow(object):
         self.dashboard_1.toggled.connect(self.dashboard_2.setChecked)
         self.dashboard_2.toggled.connect(self.dashboard_1.setChecked)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
         self.tab_widget.setCurrentIndex(0)
 
 

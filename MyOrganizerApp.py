@@ -6,6 +6,7 @@ from PySide6.QtGui import *
 import pandas as pd
 import sys
 import webbrowser
+import datetime
 
 
 class MyOrganizerApp(QMainWindow, Ui_MainWindow):
@@ -13,6 +14,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("SideBar Menu")
+
+        self.hora_timer = QTimer()
+        self.hora_timer.timeout.connect(self.actualizar_hora)
+        self.hora_timer.start(1000)
 
         self.icon_name_widget.setHidden(True)
         self.dashboard_1.clicked.connect(self.switch_to_dashboardPage)
@@ -60,6 +65,88 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         self.treeWidget_organizadores.itemChanged.connect(self.actualizar_nombre_organizador)
 
+        # Funciones para el treewidget
+        self.agregar_organizador_button.clicked.connect(self.add_category)
+        self.agregar_nueva_categoria_button.clicked.connect(self.add_subcategory)
+        self.eliminar_organizador_button.clicked.connect(self.remove_item)
+
+        self.toggle_buttons_visibility(False)
+
+        # Hacer el lineedit_nombretabla editable
+        self.lineedit_nombretabla.editingFinished.connect(self.actualizar_nombre_tabla_desde_lineedit)
+
+    def actualizar_hora(self):
+        hora_actual = datetime.datetime.now().strftime("%I:%M %p")
+        self.label_9.setText(hora_actual)
+
+    def toggle_buttons_visibility(self, visible):
+        # Cambiar el estado de visibilidad de los botones basado en el parámetro visible
+        self.agregar_organizador_button.setVisible(visible)
+        self.agregar_nueva_categoria_button.setVisible(visible)
+        self.eliminar_organizador_button.setVisible(visible)
+        self.nueva_fila_button.setVisible(visible)
+        self.nueva_columna_button.setVisible(visible)
+
+    def add_category(self):
+        # Abrir un QInputDialog para recoger el nombre de la categoría
+        category_name, ok = QInputDialog.getText(self, "Añadir Categoria:", "Nombre de la Categoria")
+        
+        if ok and category_name:
+            if category_name.strip():
+                # Crear un nuevo QTreeWidgetItem con el nombre de la categoría
+                new_category = QTreeWidgetItem([category_name])
+                # Añadir el nuevo QTreeWidgetItem al QTreeWidget
+                self.treeWidget_organizadores.addTopLevelItem(new_category)
+            else:
+                self.mostrar_warning("El nombre de la Categoria no debe estar vacio")
+
+    def add_subcategory(self):
+        # Obtener la categoría seleccionada
+        selected_item = self.treeWidget_organizadores.currentItem()
+        
+        if not selected_item:
+            self.mostrar_warning("Para añadir una SubCategoria primero debe seleccionar una Categoria")
+            return
+        else:
+            # Comprobar si el item seleccionado ya es una subcategoría
+            if selected_item.parent():
+                self.mostrar_warning("No se puede añadir una SubCategoria a una SubCategoria")
+                return
+            else:
+                # Abrir un QInputDialog para recoger el nombre de la subcategoría
+                subcategory_name, ok = QInputDialog.getText(self, "añadir SubCategoria", "Nombre de la SubCategoria:")
+                
+                if ok and subcategory_name:
+                    if subcategory_name.strip():
+                        # Crear un nuevo QTreeWidgetItem con el nombre de la subcategoría
+                        new_subcategory = QTreeWidgetItem([subcategory_name])
+                        # Añadir el nuevo QTreeWidgetItem como hijo de la categoría seleccionada
+                        selected_item.addChild(new_subcategory)
+                    else:
+                        self.mostrar_warning("El nombre de la SubCategoria no debe estar vacio")
+                        return
+
+    def remove_item(self):
+        # Obtener el item seleccionado
+        selected_item = self.treeWidget_organizadores.currentItem()
+        
+        if not selected_item:
+            self.mostrar_warning("Para eliminar un Item de su lista primero debe seleccionarlo")
+            return
+        else:
+            # Preguntar al usuario si realmente quiere eliminar el item seleccionado
+            reply = QMessageBox.question(self, '¿Eliminar Item', '¿Está seguro de que quiere eliminar este Item?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                # Eliminar el item seleccionado
+                parent = selected_item.parent()
+                if parent is None:
+                    # Si el item seleccionado es un elemento superior, eliminarlo
+                    self.treeWidget_organizadores.takeTopLevelItem(self.treeWidget_organizadores.indexOfTopLevelItem(selected_item))
+                else:
+                    # Si el item seleccionado tiene un padre, eliminarlo del árbol
+                    parent.removeChild(selected_item)
 
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
@@ -68,7 +155,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.stackedWidget.setCurrentWidget(self.nuevo_organizador_page)
 
     def switch_to_supportPage(self):
-        self.stackedWidget.setCurrentWidget(self.suppot_page)
+        self.stackedWidget.setCurrentWidget(self.support_page)
 
     def switch_to_aboutusPage(self):
         self.stackedWidget.setCurrentWidget(self.about_us_page)
@@ -165,25 +252,14 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             else:
                 self.mostrar_error("El organizador abuelo seleccionado no se encontró.")
 
-
     def crear_nueva_tabla(self):
-        columnas = int(self.spinbox_columnas.value())
         filas = int(self.spinbox_filas.value())
-        # Crea un DataFrame de pandas con el número especificado de columnas y filas
-        columnas_nombres = [f'Columna {i+1}' for i in range(columnas)]
-        return pd.DataFrame('', index=range(filas), columns=columnas_nombres)
-
-
-    def mostrar_tabla_seleccionada(self):
-        selected_item = self.treeWidget_organizadores.currentItem()
-        if selected_item:
-            nombre_tabla = selected_item.text(0)
-            if nombre_tabla in self.tablas:
-                # Verifica que lineedit_nombretabla esté definido
-                if hasattr(self, 'lineedit_nombretabla'):
-                    self.lineedit_nombretabla.setText(nombre_tabla)
-                model = PandasModel(self.tablas[nombre_tabla])
-                self.tableView.setModel(model)
+        columnas_adicionales = int(self.spinbox_columnas.value())
+        columnas_fijas = ['Descripción', 'Fecha', 'Hora', 'Valor']
+        columnas_nombres = columnas_fijas + [f'Columna {i+1}' for i in range(columnas_adicionales)]
+        
+        # Crear un DataFrame de pandas con la cabecera fija y el número especificado de filas
+        return pd.DataFrame('', index=range(1, filas+1), columns=columnas_nombres)
 
     def mostrar_tabla_seleccionada(self):
         selected_item = self.treeWidget_organizadores.currentItem()
@@ -193,10 +269,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                 # Verifica que lineedit_nombretabla esté definido
                 if hasattr(self, 'lineedit_nombretabla'):
                     self.lineedit_nombretabla.setText(nombre_tabla)
-                    
+
                     # Obtener el color almacenado
                     color = self.tablas[nombre_tabla]['color']
-                    
+
                     # Actualizar el estilo del lineedit_nombretabla
                     self.lineedit_nombretabla.setStyleSheet(f"""
                         QLineEdit {{
@@ -210,24 +286,58 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                             border: 1px solid gray; /* Borde del line edit */
                         }}
                     """)
+
                 model = PandasModel(self.tablas[nombre_tabla]['dataframe'])
                 self.tableView.setModel(model)
 
+                # Configurar el modo de edición según el estado del botón
+                if self.edit_save_button.text() == "Guardar":
+                    self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+                else:
+                    self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
+            self.toggle_buttons_visibility(True)
             self.edit_save_button.setText("Guardar")
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+            self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
         else:
-            self.edit_save_button.setText("Editar")
-            self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            if self.validar_datos():
+                self.edit_save_button.setText("Editar")
+                self.toggle_buttons_visibility(False)
+                self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            else:
+                self.mostrar_error("Hay errores en los datos. Por favor, corrígelos antes de guardar.")
 
-            # Guardar los cambios en los nombres de los organizadores
-            for i in range(self.treeWidget_organizadores.topLevelItemCount()):
-                item = self.treeWidget_organizadores.topLevelItem(i)
-                self.actualizar_nombre_organizador(item, 0)
-                for j in range(item.childCount()):
-                    child = item.child(j)
-                    self.actualizar_nombre_organizador(child, 0)
+    def validar_datos(self):
+        model = self.tableView.model()
+        if model:
+            for row in range(model.rowCount()):
+                for col in range(model.columnCount()):
+                    index = model.index(row, col)
+                    col_name = model._data.columns[col]
+                    value = model.data(index, Qt.EditRole).strip()
+                    if col_name == 'Valor':
+                        if value:
+                            try:
+                                float(value)
+                            except ValueError:
+                                return False  # Valor no es un número
+                    elif col_name == 'Fecha':
+                        if value:
+                            try:
+                                pd.to_datetime(value, format='%d/%m/%Y')
+                            except ValueError:
+                                return False  # Fecha no válida
+                    elif col_name == 'Hora':
+                        if value:
+                            try:
+                                pd.to_datetime(value, format='%H:%M')
+                            except ValueError:
+                                return False  # Hora no válida
+        return True
 
     def actualizar_nombre_organizador(self, item, column):
         nuevo_nombre = item.text(column)
@@ -239,61 +349,42 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             
             # También actualizar el UserRole con el nuevo nombre
             item.setData(column, Qt.UserRole, nuevo_nombre)
+            
+            # Si el item seleccionado es la tabla actual, actualizar el lineedit_nombretabla
+            if self.lineedit_nombretabla.text() == nombre_antiguo:
+                self.lineedit_nombretabla.setText(nuevo_nombre)
         elif not nuevo_nombre:
             self.mostrar_error("El nombre del organizador no puede estar vacío.")
             item.setText(column, nombre_antiguo)
 
+    def actualizar_nombre_tabla_desde_lineedit(self):
+        nuevo_nombre = self.lineedit_nombretabla.text().strip()
+        if not nuevo_nombre:
+            self.mostrar_error("El nombre del organizador no puede estar vacío.")
+            self.mostrar_tabla_seleccionada()  # Restaurar el nombre anterior en el line edit
+            return
 
+        selected_item = self.treeWidget_organizadores.currentItem()
+        if selected_item:
+            nombre_antiguo = selected_item.text(0)
 
-    def find_tree_item(self, parent, text):
-        for i in range(parent.childCount()):
-            item = parent.child(i)
-            if item.text(0) == text:
-                return item
-        return None
+            if nuevo_nombre in self.tablas and nuevo_nombre != nombre_antiguo:
+                self.mostrar_error("Ya existe una tabla con ese nombre.")
+                self.mostrar_tabla_seleccionada()  # Restaurar el nombre anterior en el line edit
+                return
 
+            selected_item.setText(0, nuevo_nombre)
+            selected_item.setData(0, Qt.UserRole, nuevo_nombre)
+            self.tablas[nuevo_nombre] = self.tablas.pop(nombre_antiguo)
 
+            # Actualizar el nombre del organizador en el combobox
+            self.actualizar_combobox_organizadores()
 
-    def setup_color_buttons(self):
-        self.color_buttons = [self.pushButton, self.pushButton_2, self.pushButton_3, self.pushButton_4, self.pushButton_5, self.pushButton_6]
-        for button in self.color_buttons:
-            button.clicked.connect(self.color_button_clicked)
-
-    def color_button_clicked(self):
-        for button in self.color_buttons:
-            if button.isChecked():
-                self.selected_color = button.palette().button().color().name()
-                break
-
+    def mostrar_warning(self, mensaje):
+        QMessageBox.warning(self, "Advertencia", mensaje)
 
     def mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
-
-    def enviar_correo(self):
-        seleccionado = self.list_apoyo.currentItem()
-        texto = self.plainTextEdit_support.toPlainText().strip()
-        texto_a_enviar = self.plainTextEdit_support.toPlainText()
-
-        if seleccionado:
-            asunto = seleccionado.text()
-            if texto:
-                destinatario = "afmartinez23a@udenar.edu.co"
-                # Crear el enlace mailto
-                mailto_link = f"mailto:{destinatario}?subject={asunto}&body={texto_a_enviar}"
-
-                mailto_link = mailto_link.replace(' ', '%20')
-
-                # Abrir el enlace en el navegador predeterminado
-                webbrowser.open(mailto_link)
-                self.plainTextEdit_support.clear()
-
-            else:
-                self.mostrar_warning("El texto del recuadro inferior no debe estar vacio")
-        else:
-            self.mostrar_warning("Debes seleccionar un asunto de la lista")
-    
-    def mostrar_warning(self, message):
-        QMessageBox.warning(self, "Advertencia", message)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

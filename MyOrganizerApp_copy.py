@@ -43,6 +43,8 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.edit_save_button.clicked.connect(self.edit_all)
 
         self.treeWidget_organizadores.itemSelectionChanged.connect(self.mostrar_tabla_seleccionada)
+        self.lineedit_nombretabla.editingFinished.connect(self.actualizar_nombre_tabla_desde_lineedit)
+
 
         self.dashboard_1.click()
 
@@ -66,12 +68,15 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         self.treeWidget_organizadores.itemChanged.connect(self.actualizar_nombre_organizador)
 
+
         #funciones para el treewidget
         self.agregar_organizador_button.clicked.connect(self.add_category)
         self.agregar_nueva_categoria_button.clicked.connect(self.add_subcategory)
         self.eliminar_organizador_button.clicked.connect(self.remove_item)
 
         self.toggle_buttons_visibility(False)
+
+        
 
     def actualizar_hora(self):
         hora_actual = datetime.datetime.now().strftime("%I:%M %p")
@@ -213,6 +218,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         if not nombre:
             self.mostrar_error("El nombre del organizador es obligatorio")
             return
+        
+        if nombre in self.tablas:
+            self.mostrar_error("Ya existe una tabla con ese nombre.")
+            return 
 
         organizador_abuelo = self.combobox_organizador.currentText().strip()
         organizador_padre = self.combobox_suborganizador.currentText().strip()
@@ -258,13 +267,14 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                 self.mostrar_error("El organizador abuelo seleccionado no se encontró.")
 
     def crear_nueva_tabla(self):
-        filas = int(self.spinbox_filas.value())
+        filas = 5  # Número de filas por defecto
         columnas_adicionales = int(self.spinbox_columnas.value())
         columnas_fijas = ['Descripción', 'Fecha', 'Hora', 'Valor']
         columnas_nombres = columnas_fijas + [f'Columna {i+1}' for i in range(columnas_adicionales)]
         
         # Crear un DataFrame de pandas con la cabecera fija y el número especificado de filas
         return pd.DataFrame('', index=range(1, filas+1), columns=columnas_nombres)
+
 
 
     def mostrar_tabla_seleccionada(self):
@@ -275,10 +285,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                 # Verifica que lineedit_nombretabla esté definido
                 if hasattr(self, 'lineedit_nombretabla'):
                     self.lineedit_nombretabla.setText(nombre_tabla)
-                    
+
                     # Obtener el color almacenado
                     color = self.tablas[nombre_tabla]['color']
-                    
+
                     # Actualizar el estilo del lineedit_nombretabla
                     self.lineedit_nombretabla.setStyleSheet(f"""
                         QLineEdit {{
@@ -292,9 +302,15 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                             border: 1px solid gray; /* Borde del line edit */
                         }}
                     """)
-                model = PandasModel(self.tablas[nombre_tabla]['dataframe'].shape[1], self.tablas[nombre_tabla]['dataframe'].shape[0], self.tablas[nombre_tabla]['dataframe'])
 
+                model = PandasModel(self.tablas[nombre_tabla]['dataframe'])
                 self.tableView.setModel(model)
+
+                # Configurar el modo de edición según el estado del botón
+                if self.edit_save_button.text() == "Guardar":
+                    self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+                else:
+                    self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
@@ -302,43 +318,105 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             self.edit_save_button.setText("Guardar")
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
             self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+            self.lineedit_nombretabla.setReadOnly(False)
         else:
-            model = self.tableView.model()
-            if model and any(model.flags(model.index(row, col)) & Qt.ItemIsEditable for row in range(model.rowCount()) for col in range(model.columnCount())):
-                for row in range(model.rowCount()):
-                    for col in range(model.columnCount()):
-                        index = model.index(row, col)
-                        col_name = model._data.columns[col]
-                        value = model.data(index, Qt.EditRole)
-                        if col_name == 'Valor':
+            if self.validar_datos() and self.actualizar_nombre_tabla_desde_lineedit():
+                self.lineedit_nombretabla.setReadOnly(True)
+                self.edit_save_button.setText("Editar")
+                self.toggle_buttons_visibility(False)
+                self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            else:
+                self.mostrar_error("Hay errores en los datos. Por favor, corrígelos antes de guardar.")
+
+
+    def validar_datos(self):
+        model = self.tableView.model()
+        if model:
+            for row in range(model.rowCount()):
+                for col in range(model.columnCount()):
+                    index = model.index(row, col)
+                    col_name = model._data.columns[col]
+                    value = model.data(index, Qt.EditRole).strip()
+                    if col_name == 'Valor':
+                        if value:
                             try:
-                                int(value)
+                                float(value)
                             except ValueError:
-                                self.mostrar_error("El valor debe ser un número entero")
-                                return
-            self.edit_save_button.setText("Editar")
-            self.toggle_buttons_visibility(False)
-            self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                                return False  # Valor no es un número
+                    elif col_name == 'Fecha':
+                        if value:
+                            try:
+                                pd.to_datetime(value, format='%d/%m/%Y')
+                            except ValueError:
+                                return False  # Fecha no válida
+                    elif col_name == 'Hora':
+                        if value:
+                            try:
+                                pd.to_datetime(value, format='%H:%M')
+                            except ValueError:
+                                return False  # Hora no válida
+        return True
 
+    def actualizar_nombre_tabla_desde_lineedit(self):
+        nuevo_nombre = self.lineedit_nombretabla.text().strip()
+        if not nuevo_nombre:
+            self.mostrar_error("El nombre del organizador no puede estar vacío.")
+            self.mostrar_tabla_seleccionada()  # Restaurar el nombre anterior en el line edit
+            return False
 
+        selected_item = self.treeWidget_organizadores.currentItem()
+        if selected_item:
+            nombre_antiguo = selected_item.text(0)
 
+            if nuevo_nombre in self.tablas and nuevo_nombre != nombre_antiguo:
+                self.mostrar_error("Ya existe una tabla con ese nombre.")
+                self.mostrar_tabla_seleccionada()  # Restaurar el nombre anterior en el line edit
+                return False
 
+            if nombre_antiguo in self.tablas:
+                # Actualiza el nombre en el tree widget
+                selected_item.setText(0, nuevo_nombre)
+                selected_item.setData(0, Qt.UserRole, nuevo_nombre)
+                
+                # Actualiza el diccionario tablas
+                self.tablas[nuevo_nombre] = self.tablas.pop(nombre_antiguo)
+
+                # Actualiza el combobox de organizadores
+                self.actualizar_combobox_organizadores()
+                return True
+            else:
+                self.mostrar_error(f"El nombre antiguo '{nombre_antiguo}' no se encontró en las tablas.")
+                self.mostrar_tabla_seleccionada()  # Restaurar el nombre anterior en el line edit
+                return False
+
+        self.mostrar_error("No hay ningún ítem seleccionado.")
+        return False
 
 
     def actualizar_nombre_organizador(self, item, column):
-        nuevo_nombre = item.text(column)
+        nuevo_nombre = item.text(column).strip()
         nombre_antiguo = item.data(column, Qt.UserRole)
-        
+
         if nombre_antiguo and nuevo_nombre:
-            # Actualizar la entrada en self.tablas
-            self.tablas[nuevo_nombre] = self.tablas.pop(nombre_antiguo)
-            
-            # También actualizar el UserRole con el nuevo nombre
-            item.setData(column, Qt.UserRole, nuevo_nombre)
+            if nuevo_nombre in self.tablas and nuevo_nombre != nombre_antiguo:
+                self.mostrar_error("Ya existe una tabla con ese nombre.")
+                item.setText(column, nombre_antiguo)
+                return
+
+            if nombre_antiguo in self.tablas:
+                self.tablas[nuevo_nombre] = self.tablas.pop(nombre_antiguo)
+                item.setData(column, Qt.UserRole, nuevo_nombre)
+
+                if self.lineedit_nombretabla.text() == nombre_antiguo:
+                    self.lineedit_nombretabla.setText(nuevo_nombre)
+            else:
+                self.mostrar_error("El nombre antiguo no se encontró en las tablas.")
+                item.setText(column, nombre_antiguo)
         elif not nuevo_nombre:
             self.mostrar_error("El nombre del organizador no puede estar vacío.")
             item.setText(column, nombre_antiguo)
+
 
 
 
