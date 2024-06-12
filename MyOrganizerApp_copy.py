@@ -5,6 +5,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 import pandas as pd
 import sys
+import webbrowser
 
 
 class MyOrganizerApp(QMainWindow, Ui_MainWindow):
