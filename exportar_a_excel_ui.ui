@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>733</width>
+    <height>422</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QPushButton" name="enviar_buttton_apoyo">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>350</y>
+     <width>200</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>110</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Roboto</family>
+     <pointsize>-1</pointsize>
+     <bold>true</bold>
+     <stylestrategy>PreferAntialias</stylestrategy>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: rgba(103, 178, 98, 180); 
+    font-size: 17px;
+    padding: 15px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    color: black;
+}
+
+QPushButton:hover {
+    background-color: rgba(103, 178, 98, 150);
+    font-size: 18px;
+}
+
+QPushButton:pressed {
+    background-color: rgba(103, 178, 98, 200);
+    font-size: 18px;
+    border: none;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Aceptar</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="enviar_buttton_apoyo_2">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>350</y>
+     <width>200</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>110</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Roboto</family>
+     <pointsize>-1</pointsize>
+     <bold>true</bold>
+     <stylestrategy>PreferAntialias</stylestrategy>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	background-color: rgba(250, 82, 82, 150);
+    font-size: 17px;
+    padding: 15px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    color: black;
+}
+
+QPushButton:hover {
+    background-color: rgba(103, 178, 98, 150);
+    font-size: 18px;
+}
+
+QPushButton:pressed {
+    background-color: rgba(103, 178, 98, 200);
+    font-size: 18px;
+    border: none;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Cancelar</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
