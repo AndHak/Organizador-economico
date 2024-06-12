@@ -6,6 +6,7 @@ from PySide6.QtGui import *
 import pandas as pd
 import sys
 import webbrowser
+import datetime
 
 
 class MyOrganizerApp(QMainWindow, Ui_MainWindow):
@@ -13,6 +14,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("SideBar Menu")
+
+        self.hora_timer = QTimer()
+        self.hora_timer.timeout.connect(self.actualizar_hora)
+        self.hora_timer.start(1000)
 
         self.icon_name_widget.setHidden(True)
         self.dashboard_1.clicked.connect(self.switch_to_dashboardPage)
@@ -41,6 +46,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         self.dashboard_1.click()
 
+
         self.lineedit_nombretabla.setStyleSheet("""QLineEdit {
     background-color: rgb(103, 178, 98); /* Color de fondo */
     border-top-left-radius: 20px; /* Radio de borde superior izquierdo */
@@ -66,6 +72,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.eliminar_organizador_button.clicked.connect(self.remove_item)
 
         self.toggle_buttons_visibility(False)
+
+    def actualizar_hora(self):
+        hora_actual = datetime.datetime.now().strftime("%I:%M %p")
+        self.label_9.setText(hora_actual)
 
     
     def toggle_buttons_visibility(self, visible):
