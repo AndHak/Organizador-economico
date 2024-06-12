@@ -59,6 +59,85 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         self.treeWidget_organizadores.itemChanged.connect(self.actualizar_nombre_organizador)
 
+        #funciones para el treewidget
+        self.agregar_organizador_button.clicked.connect(self.add_category)
+        self.agregar_nueva_categoria_button.clicked.connect(self.add_subcategory)
+        self.eliminar_organizador_button.clicked.connect(self.remove_item)
+
+    
+    def toggle_buttons_visibility(self):
+        # Cambiar el estado de visibilidad de los botones
+        self.agregar_organizador_button.setVisible(not self.agregar_organizador_button.isVisible())
+        self.agregar_nueva_categoria_button.setVisible(not self.agregar_nueva_categoria_button.isVisible())
+        self.eliminar_organizador_button.setVisible(not self.eliminar_organizador_button.isVisible())
+        self.nueva_fila_button.setVisible(not self.nueva_fila_button.isVisible())
+        self.nueva_columna_button.setVisible(not self.nueva_columna_button.isVisible())
+
+    def add_category(self):
+        # Abrir un QInputDialog para recoger el nombre de la categoría
+        category_name, ok = QInputDialog.getText(self, "Añadir Categoria:", "Nombre de la Categoria")
+        
+        if ok and category_name:
+            if category_name.strip():
+                # Crear un nuevo QTreeWidgetItem con el nombre de la categoría
+                new_category = QTreeWidgetItem([category_name])
+                # Añadir el nuevo QTreeWidgetItem al QTreeWidget
+                self.treeWidget_organizadores.addTopLevelItem(new_category)
+            else:
+                self.mostrar_warning("El nombre de la Categoria no debe estar vacio")
+    
+    def add_subcategory(self):
+        # Obtener la categoría seleccionada
+        selected_item = self.treeWidget_organizadores.currentItem()
+        
+        if not selected_item:
+            self.mostrar_warning("Para añadir una SubCategoria primero debe seleccionar una Categoria")
+            return
+        else:
+            # Comprobar si el item seleccionado ya es una subcategoría
+            if selected_item.parent():
+                self.mostrar_warning("No se puede añadir una SubCategoria a una SubCategoria")
+                return
+            else:
+                # Abrir un QInputDialog para recoger el nombre de la subcategoría
+                subcategory_name, ok = QInputDialog.getText(self, "añadir SubCategoria", "Nombre de la SubCategoria:")
+                
+                if ok and subcategory_name:
+                    if subcategory_name.strip():
+                        # Crear un nuevo QTreeWidgetItem con el nombre de la subcategoría
+                        new_subcategory = QTreeWidgetItem([subcategory_name])
+                        # Añadir el nuevo QTreeWidgetItem como hijo de la categoría seleccionada
+                        selected_item.addChild(new_subcategory)
+                    else:
+                        self.mostrar_warning("El nombre de la SubCategoria no debe estar vacio")
+                        return
+    
+    def remove_item(self):
+        # Obtener el item seleccionado
+        selected_item = self.treeWidget_organizadores.currentItem()
+        
+        if not selected_item:
+            self.mostrar_warning("Para eliminar un Item de su lista primero debe seleccionarlo")
+            return
+        else:
+            # Preguntar al usuario si realmente quiere eliminar el item seleccionado
+            reply = QMessageBox.question(self, '¿ELiminar Item', 'Esta seguro que quiere eliminar este Item?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                # Eliminar el item seleccionado
+                parent = selected_item.parent()
+                if parent is None:
+                    # Si el item seleccionado es un elemento superior, eliminarlo
+                    self.treeWidget_organizadores.takeTopLevelItem(self.treeWidget_organizadores.indexOfTopLevelItem(selected_item))
+                else:
+                    # Si el item seleccionado tiene un padre, eliminarlo del árbol
+                    parent.removeChild(selected_item)
+
+
+        
+
+
 
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
@@ -210,10 +289,12 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
+            self.toggle_buttons_visibility()
             self.edit_save_button.setText("Guardar")
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
         else:
             self.edit_save_button.setText("Editar")
+            self.toggle_buttons_visibility()
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
             # Guardar los cambios en los nombres de los organizadores
@@ -264,9 +345,35 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
     def mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
 
+    def enviar_correo(self):
+        seleccionado = self.list_apoyo.currentItem()
+        texto = self.plainTextEdit_support.toPlainText().strip()
+        texto_a_enviar = self.plainTextEdit_support.toPlainText()
+
+        if seleccionado:
+            asunto = seleccionado.text()
+            if texto:
+                destinatario = "afmartinez23a@udenar.edu.co"
+                # Crear el enlace mailto
+                mailto_link = f"mailto:{destinatario}?subject={asunto}&body={texto_a_enviar}"
+
+                mailto_link = mailto_link.replace(' ', '%20')
+
+                # Abrir el enlace en el navegador predeterminado
+                webbrowser.open(mailto_link)
+                self.plainTextEdit_support.clear()
+
+            else:
+                self.mostrar_warning("El texto del recuadro inferior no debe estar vacio")
+        else:
+            self.mostrar_warning("Debes seleccionar un asunto de la lista")
+    
+    def mostrar_warning(self, message):
+        QMessageBox.warning(self, "Advertencia", message)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
+    app.setStyle("windowsvista")
     window = MyOrganizerApp()
 
     window.show()

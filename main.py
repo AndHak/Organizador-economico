@@ -4,7 +4,7 @@
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 import sys
-from MyOrganizerApp import MyOrganizerApp
+from MyOrganizerApp_copy import MyOrganizerApp
 
 app = QApplication(sys.argv)
 app.setStyle("windowsvista")
