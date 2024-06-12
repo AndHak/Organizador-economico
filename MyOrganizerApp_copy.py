@@ -65,14 +65,17 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.agregar_nueva_categoria_button.clicked.connect(self.add_subcategory)
         self.eliminar_organizador_button.clicked.connect(self.remove_item)
 
+        self.toggle_buttons_visibility(False)
+
     
-    def toggle_buttons_visibility(self):
-        # Cambiar el estado de visibilidad de los botones
-        self.agregar_organizador_button.setVisible(not self.agregar_organizador_button.isVisible())
-        self.agregar_nueva_categoria_button.setVisible(not self.agregar_nueva_categoria_button.isVisible())
-        self.eliminar_organizador_button.setVisible(not self.eliminar_organizador_button.isVisible())
-        self.nueva_fila_button.setVisible(not self.nueva_fila_button.isVisible())
-        self.nueva_columna_button.setVisible(not self.nueva_columna_button.isVisible())
+    def toggle_buttons_visibility(self, visible):
+        # Cambiar el estado de visibilidad de los botones basado en el parámetro visible
+        self.agregar_organizador_button.setVisible(visible)
+        self.agregar_nueva_categoria_button.setVisible(visible)
+        self.eliminar_organizador_button.setVisible(visible)
+        self.nueva_fila_button.setVisible(visible)
+        self.nueva_columna_button.setVisible(visible)
+
 
     def add_category(self):
         # Abrir un QInputDialog para recoger el nombre de la categoría
@@ -290,12 +293,12 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
-            self.toggle_buttons_visibility()
+            self.toggle_buttons_visibility(True)
             self.edit_save_button.setText("Guardar")
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
         else:
             self.edit_save_button.setText("Editar")
-            self.toggle_buttons_visibility()
+            self.toggle_buttons_visibility(False)
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
             # Guardar los cambios en los nombres de los organizadores
@@ -305,6 +308,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                 for j in range(item.childCount()):
                     child = item.child(j)
                     self.actualizar_nombre_organizador(child, 0)
+
 
     def actualizar_nombre_organizador(self, item, column):
         nuevo_nombre = item.text(column)
