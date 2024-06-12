@@ -257,21 +257,15 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             else:
                 self.mostrar_error("El organizador abuelo seleccionado no se encontró.")
 
-
     def crear_nueva_tabla(self):
-        # Crea un DataFrame de pandas con las columnas especificadas
-        return pd.DataFrame(columns=['Descripción', 'Fecha', 'Hora', 'Valor'])
+        filas = int(self.spinbox_filas.value())
+        columnas_adicionales = int(self.spinbox_columnas.value())
+        columnas_fijas = ['Descripción', 'Fecha', 'Hora', 'Valor']
+        columnas_nombres = columnas_fijas + [f'Columna {i+1}' for i in range(columnas_adicionales)]
+        
+        # Crear un DataFrame de pandas con la cabecera fija y el número especificado de filas
+        return pd.DataFrame('', index=range(1, filas+1), columns=columnas_nombres)
 
-    def mostrar_tabla_seleccionada(self):
-        selected_item = self.treeWidget_organizadores.currentItem()
-        if selected_item:
-            nombre_tabla = selected_item.text(0)
-            if nombre_tabla in self.tablas:
-                # Verifica que lineedit_nombretabla esté definido
-                if hasattr(self, 'lineedit_nombretabla'):
-                    self.lineedit_nombretabla.setText(nombre_tabla)
-                model = PandasModel(self.tablas[nombre_tabla])
-                self.tableView.setModel(model)
 
     def mostrar_tabla_seleccionada(self):
         selected_item = self.treeWidget_organizadores.currentItem()
@@ -298,7 +292,8 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                             border: 1px solid gray; /* Borde del line edit */
                         }}
                     """)
-                model = PandasModel(self.tablas[nombre_tabla]['dataframe'])
+                model = PandasModel(self.tablas[nombre_tabla]['dataframe'].shape[1], self.tablas[nombre_tabla]['dataframe'].shape[0], self.tablas[nombre_tabla]['dataframe'])
+
                 self.tableView.setModel(model)
 
     def edit_all(self):
@@ -306,18 +301,29 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             self.toggle_buttons_visibility(True)
             self.edit_save_button.setText("Guardar")
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
+            self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
         else:
+            model = self.tableView.model()
+            if model and any(model.flags(model.index(row, col)) & Qt.ItemIsEditable for row in range(model.rowCount()) for col in range(model.columnCount())):
+                for row in range(model.rowCount()):
+                    for col in range(model.columnCount()):
+                        index = model.index(row, col)
+                        col_name = model._data.columns[col]
+                        value = model.data(index, Qt.EditRole)
+                        if col_name == 'Valor':
+                            try:
+                                int(value)
+                            except ValueError:
+                                self.mostrar_error("El valor debe ser un número entero")
+                                return
             self.edit_save_button.setText("Editar")
             self.toggle_buttons_visibility(False)
             self.treeWidget_organizadores.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-            # Guardar los cambios en los nombres de los organizadores
-            for i in range(self.treeWidget_organizadores.topLevelItemCount()):
-                item = self.treeWidget_organizadores.topLevelItem(i)
-                self.actualizar_nombre_organizador(item, 0)
-                for j in range(item.childCount()):
-                    child = item.child(j)
-                    self.actualizar_nombre_organizador(child, 0)
+
+
+
 
 
     def actualizar_nombre_organizador(self, item, column):

@@ -167,8 +167,12 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
 
     def crear_nueva_tabla(self):
-        # Crea un DataFrame de pandas con las columnas especificadas
-        return pd.DataFrame(columns=['Descripción', 'Fecha', 'Hora', 'Valor'])
+        columnas = int(self.spinbox_columnas.value())
+        filas = int(self.spinbox_filas.value())
+        # Crea un DataFrame de pandas con el número especificado de columnas y filas
+        columnas_nombres = [f'Columna {i+1}' for i in range(columnas)]
+        return pd.DataFrame('', index=range(filas), columns=columnas_nombres)
+
 
     def mostrar_tabla_seleccionada(self):
         selected_item = self.treeWidget_organizadores.currentItem()
