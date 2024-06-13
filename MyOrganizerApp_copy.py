@@ -1,5 +1,6 @@
 from economix_ui_ui import Ui_MainWindow
 from creacion_tabla import PandasModel
+from inputdialog import LocationDialog
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -76,6 +77,151 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         self.toggle_buttons_visibility(False)
 
+        #listas para llevar los nombres de las categorias y subcategorias
+        self.categorias = []
+        self.subcategorias = []
+
+        #conexiones ayuda del menubar
+        self.actionSoporte.triggered.connect(self.switch_to_supportPage)
+        self.actionAcerca_De.triggered.connect(self.switch_to_aboutusPage)
+
+        #conexiones archivos menubar
+        self.actionSalir.triggered.connect(QApplication.quit)
+        self.actionImportar_organizador.triggered.connect(self.import_table)
+
+
+    def import_table(self):
+        # Abre un cuadro de diálogo para seleccionar el archivo de la tabla
+        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo", "", "Archivos XLSX (*.xlsx);;Todos los Archivos (*)")
+        
+        if file_path:
+            # Verificar si el archivo seleccionado es una tabla válida
+            try:
+                df = pd.read_excel(file_path, engine='openpyxl')
+            except Exception as e:
+                self.mostrar_error(f"Error al cargar el archivo: {str(e)}")
+                return
+
+            # Obtener el nombre del archivo sin extensión
+            table_name = QFileInfo(file_path).baseName()
+
+            # Verificar si el nombre de la tabla ya existe como categoría o tabla
+            if self.is_category_or_table_name(table_name):
+                self.mostrar_warning("El nombre de la tabla ya existe como categoría o tabla.")
+                return
+
+            # Abrir un cuadro de diálogo para seleccionar la ubicación en el treeWidget
+            location_dialog = QDialog(self)
+            layout = QVBoxLayout(location_dialog)
+
+            # Agregar los labels y comboboxes
+            category_label = QLabel("Categoría:")
+            subcategory_label = QLabel("Subcategoría:")
+            layout.addWidget(category_label)
+            category_combobox = QComboBox()
+            category_combobox.addItem("Ninguno")
+            layout.addWidget(category_combobox)
+
+            layout.addWidget(subcategory_label)
+            subcategory_combobox = QComboBox()
+            subcategory_combobox.setEnabled(False)  # Inicialmente deshabilitado
+            layout.addWidget(subcategory_combobox)
+
+            # Añadir categorías y subcategorías a los comboboxes
+            categories = []
+            subcategories = {}
+
+            for i in range(self.treeWidget_organizadores.topLevelItemCount()):
+                item = self.treeWidget_organizadores.topLevelItem(i)
+                category_name = item.text(0)
+                categories.append(category_name)
+                subcategories[category_name] = ["Ninguno"]  # Incluye "Ninguno" como opción predeterminada
+                for j in range(item.childCount()):
+                    subitem = item.child(j)
+                    subcategory_name = subitem.text(0)
+                    subcategories[category_name].append(subcategory_name)
+
+            category_combobox.addItems(categories)
+
+            def update_subcategories(index):
+                selected_category = category_combobox.currentText()
+                if selected_category == "Ninguno":
+                    subcategory_combobox.clear()
+                    subcategory_combobox.addItem("Ninguno")
+                    subcategory_combobox.setEnabled(False)
+                else:
+                    subcategory_combobox.clear()
+                    subcategory_combobox.addItems(subcategories[selected_category])
+                    subcategory_combobox.setEnabled(True)
+
+            category_combobox.currentIndexChanged.connect(update_subcategories)
+            update_subcategories(0)  # Para asegurar que las subcategorías se actualicen correctamente al inicio
+
+            # Botones de Aceptar y Cancelar
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, location_dialog)
+            buttons.accepted.connect(location_dialog.accept)
+            buttons.rejected.connect(location_dialog.reject)
+            layout.addWidget(buttons)
+
+            location_dialog.setLayout(layout)
+
+            if location_dialog.exec() == QDialog.Accepted:
+                selected_category = category_combobox.currentText()
+                selected_subcategory = subcategory_combobox.currentText()
+
+                # Lógica para agregar la tabla en la ubicación correcta
+                if selected_category == "Ninguno":
+                    # Agregar fuera de categorías
+                    selected_item = None
+                else:
+                    # Buscar la ubicación en el treeWidget
+                    for i in range(self.treeWidget_organizadores.topLevelItemCount()):
+                        item = self.treeWidget_organizadores.topLevelItem(i)
+                        if item.text(0) == selected_category:
+                            selected_item = item
+                            if selected_subcategory != "Ninguno":
+                                for j in range(item.childCount()):
+                                    subitem = item.child(j)
+                                    if subitem.text(0) == selected_subcategory:
+                                        selected_item = subitem
+                                        break
+                            break
+                    else:
+                        self.mostrar_error("Ubicación no encontrada en el árbol de organizadores.")
+                        return
+
+                # Añadir la nueva tabla a la estructura y actualizar el treeWidget
+                self.add_table_to_location(df, table_name, selected_item)  # Llama al método para agregar la tabla
+
+    def is_category_or_table_name(self, name):
+        # Verifica si el nombre ya existe como categoría o tabla en el árbol de organizadores
+        for i in range(self.treeWidget_organizadores.topLevelItemCount()):
+            item = self.treeWidget_organizadores.topLevelItem(i)
+            if item.text(0) == name:
+                return True  # Nombre existe como categoría
+            for j in range(item.childCount()):
+                subitem = item.child(j)
+                if subitem.text(0) == name:
+                    return True  # Nombre existe como subcategoría
+        return False  # Nombre no existe como categoría ni subcategoría
+
+    def add_table_to_location(self, table, table_name, selected_item=None):
+        # Añadir la nueva tabla a la estructura y actualizar el treeWidget
+        self.tablas[table_name] = {'dataframe': table, 'color': self.selected_color}
+        new_table_item = QTreeWidgetItem([table_name])
+
+        if selected_item:
+            selected_item.addChild(new_table_item)
+        else:
+            self.treeWidget_organizadores.addTopLevelItem(new_table_item)
+
+        self.mostrar_tabla_seleccionada()  # Mostrar la tabla recién añadida
+
+
+
+
+
+
         
 
     def actualizar_hora(self):
@@ -96,40 +242,56 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         # Abrir un QInputDialog para recoger el nombre de la categoría
         category_name, ok = QInputDialog.getText(self, "Añadir Categoria:", "Nombre de la Categoria")
         
-        if ok and category_name:
-            if category_name.strip():
-                # Crear un nuevo QTreeWidgetItem con el nombre de la categoría
-                new_category = QTreeWidgetItem([category_name])
-                # Añadir el nuevo QTreeWidgetItem al QTreeWidget
-                self.treeWidget_organizadores.addTopLevelItem(new_category)
+        if ok and category_name is not None:  # Verificar si se hizo clic en OK y category_name no es None
+            category_name = category_name.strip()  # Eliminar espacios en blanco al inicio y final
+            
+            if category_name:  # Verificar si el nombre no está vacío después de quitar espacios en blanco
+                if category_name not in self.categorias:
+                    # Crear un nuevo QTreeWidgetItem con el nombre de la categoría
+                    new_category = QTreeWidgetItem([category_name])
+                    # Añadir el nuevo QTreeWidgetItem al QTreeWidget
+                    self.treeWidget_organizadores.addTopLevelItem(new_category)
+                    # Agregar la categoría a la lista de categorías
+                    self.categorias.append(category_name)
+                else:
+                    self.mostrar_warning("El nombre ya existe en las Categorias, favor digite uno distinto")
             else:
                 self.mostrar_warning("El nombre de la Categoria no debe estar vacio")
+
+                
     
     def add_subcategory(self):
         # Obtener la categoría seleccionada
         selected_item = self.treeWidget_organizadores.currentItem()
         
         if not selected_item:
-            self.mostrar_warning("Para añadir una SubCategoria primero debe seleccionar una Categoria")
+            self.mostrar_warning("Para añadir una SubCategoría primero debe seleccionar una Categoría")
             return
+        
+        # Comprobar si el item seleccionado ya es una subcategoría
+        if selected_item.parent():
+            self.mostrar_warning("No se puede añadir una SubCategoría a una SubCategoría")
         else:
-            # Comprobar si el item seleccionado ya es una subcategoría
-            if selected_item.parent():
-                self.mostrar_warning("No se puede añadir una SubCategoria a una SubCategoria")
-                return
-            else:
-                # Abrir un QInputDialog para recoger el nombre de la subcategoría
-                subcategory_name, ok = QInputDialog.getText(self, "añadir SubCategoria", "Nombre de la SubCategoria:")
+            # Abrir un QInputDialog para recoger el nombre de la subcategoría
+            subcategory_name, ok = QInputDialog.getText(self, "Añadir SubCategoría", "Nombre de la SubCategoría:")
+            
+            if ok and subcategory_name is not None:  # Verificar si se hizo clic en OK y subcategory_name no es None
+                subcategory_name = subcategory_name.strip()  # Eliminar espacios en blanco al inicio y final
                 
-                if ok and subcategory_name:
-                    if subcategory_name.strip():
+                if subcategory_name:  # Verificar si el nombre no está vacío después de quitar espacios en blanco
+                    if subcategory_name not in self.subcategorias:
                         # Crear un nuevo QTreeWidgetItem con el nombre de la subcategoría
                         new_subcategory = QTreeWidgetItem([subcategory_name])
                         # Añadir el nuevo QTreeWidgetItem como hijo de la categoría seleccionada
                         selected_item.addChild(new_subcategory)
+                        # Agregar la subcategoría a la lista de subcategorías
+                        self.subcategorias.append(subcategory_name)
                     else:
-                        self.mostrar_warning("El nombre de la SubCategoria no debe estar vacio")
-                        return
+                        self.mostrar_warning("El nombre ya existe en las SubCategorías, favor digite uno distinto")
+                else:
+                    self.mostrar_warning("El nombre de la SubCategoría no debe estar vacío")
+
+                       
     
     def remove_item(self):
         # Obtener el item seleccionado
@@ -140,18 +302,44 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             return
         else:
             # Preguntar al usuario si realmente quiere eliminar el item seleccionado
-            reply = QMessageBox.question(self, '¿ELiminar Item', 'Esta seguro que quiere eliminar este Item?',
-                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            reply = QMessageBox.question(self, '¿Eliminar Item?', '¿Está seguro de que quiere eliminar este item?',
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
             if reply == QMessageBox.Yes:
-                # Eliminar el item seleccionado
-                parent = selected_item.parent()
-                if parent is None:
-                    # Si el item seleccionado es un elemento superior, eliminarlo
-                    self.treeWidget_organizadores.takeTopLevelItem(self.treeWidget_organizadores.indexOfTopLevelItem(selected_item))
-                else:
-                    # Si el item seleccionado tiene un padre, eliminarlo del árbol
-                    parent.removeChild(selected_item)
+                # Eliminar el item seleccionado y sus tablas asociadas
+                self.eliminar_item_y_tablas(selected_item)
+                
+                # Limpiar la vista de la tabla y el lineedit_nombretabla
+                self.limpiar_vista_tabla()
+
+    def eliminar_item_y_tablas(self, item):
+        # Verificar si el item tiene hijos
+        while item.childCount() > 0:
+            child = item.takeChild(0)
+            self.eliminar_item_y_tablas(child)
+        
+        # Si el item tiene un nombre de tabla, eliminarlo de self.tablas
+        nombre_tabla = item.text(0)
+        if nombre_tabla in self.tablas:
+            del self.tablas[nombre_tabla]
+        
+        # Eliminar el item del árbol
+        parent = item.parent()
+        if parent is None:
+            self.treeWidget_organizadores.takeTopLevelItem(self.treeWidget_organizadores.indexOfTopLevelItem(item))
+        else:
+            parent.removeChild(item)
+
+    def limpiar_vista_tabla(self):
+        # Limpiar el lineedit_nombretabla
+        if hasattr(self, 'lineedit_nombretabla'):
+            self.lineedit_nombretabla.clear()
+            self.lineedit_nombretabla.setStyleSheet("")
+
+        # Limpiar la vista de la tabla
+        self.tableView.setModel(None)
+        self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
 
 
         
