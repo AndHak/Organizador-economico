@@ -93,6 +93,30 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.nueva_fila_button.clicked.connect(self.nueva_fila)
         self.nueva_columna_button.clicked.connect(self.nueva_columna)
 
+
+    def mostrar_nombres_tablas(self):
+        nombres_tablas = list(self.tablas.keys())  # Obtener los nombres de todas las tablas
+        model = QStringListModel(nombres_tablas, self)   # Crear un modelo de lista de cadenas
+        self.total_gastos_view.setModel(model)      # Asignar el modelo a total_gastos_view
+        print("Modelo actualizado con nombres de tablas:", nombres_tablas)  # Verificación
+
+    
+    def calcular_valor_total(self):
+        total_global = 0
+        
+        for nombre_tabla, info_tabla in self.tablas.items():
+            df = info_tabla['dataframe']
+            if 'Valor' in df.columns:
+                valores = df['Valor']
+                valores_numericos = pd.to_numeric(valores, errors='coerce')
+                valores_numericos_validos = valores_numericos.dropna()
+                if not valores_numericos_validos.empty:
+                    total_tabla = valores_numericos_validos.sum()
+                    print(f"Valor total de '{nombre_tabla}': {total_tabla}")
+                    total_global += total_tabla
+        
+        print(f"Valor total global de todas las tablas: {total_global}")
+
     def exportar_a_excel(self):
         # Obtener el ítem seleccionado actualmente en el treeWidget_organizadores
         selected_item = self.treeWidget_organizadores.currentItem()
@@ -406,22 +430,28 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
         self.limpiar_nuevo_organizador_page()
+        self.mostrar_nombres_tablas()
+        self.calcular_valor_total()
 
     def switch_to_newPage(self):
         self.stackedWidget.setCurrentWidget(self.nuevo_organizador_page)
         self.limpiar_nuevo_organizador_page()
+        
 
     def switch_to_supportPage(self):
         self.stackedWidget.setCurrentWidget(self.suppot_page)
         self.limpiar_nuevo_organizador_page()
+        
 
     def switch_to_aboutusPage(self):
         self.stackedWidget.setCurrentWidget(self.about_us_page)
         self.limpiar_nuevo_organizador_page()
+        
 
     def switch_to_settingsPage(self):
         self.stackedWidget.setCurrentWidget(self.Settings_page)
         self.limpiar_nuevo_organizador_page()
+        
 
     def mostar_creacion_de_sub_tabla(self):
         if self.checkbox_organizador.isChecked():
@@ -556,6 +586,8 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
                 model = PandasModel(self.tablas[nombre_tabla]['dataframe'])
                 self.tableView.setModel(model)
+                self.mostrar_nombres_tablas()
+                self.calcular_valor_total()
 
                 # Configurar el modo de edición según el estado del botón
                 if self.edit_save_button.text() == "Guardar":
