@@ -89,9 +89,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         self.actionImportar_organizador.triggered.connect(self.import_table)
         self.actionExportar_organizador.triggered.connect(self.exportar_a_excel)
 
-        #conexion botones nueva columna nueva fila
+        #conexion botones nueva columna nueva fila y borrar
         self.nueva_fila_button.clicked.connect(self.nueva_fila)
         self.nueva_columna_button.clicked.connect(self.nueva_columna)
+        self.eliminar_tabla_button.clicked.connect(self.borrar_fila_o_columna)
 
 
     def mostrar_nombres_tablas(self):
@@ -162,6 +163,41 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             self.actualizar_vista_tabla(df)
         else:
             self.mostrar_warning("No hay tabla seleccionada para agregar una columna.")
+
+    def borrar_fila(self, indice):
+        # Borrar la fila seleccionada del DataFrame actual
+        if self.current_table_name:
+            df = self.tablas[self.current_table_name]['dataframe']
+            df = df.drop(indice, axis=0).reset_index(drop=True)
+            self.tablas[self.current_table_name]['dataframe'] = df
+            self.actualizar_vista_tabla(df)
+        else:
+            self.mostrar_warning("No hay tabla seleccionada para borrar una fila.")
+
+    def borrar_columna(self, indice):
+        # Borrar la columna seleccionada del DataFrame actual
+        if self.current_table_name:
+            df = self.tablas[self.current_table_name]['dataframe']
+            df = df.drop(df.columns[indice], axis=1)
+            self.tablas[self.current_table_name]['dataframe'] = df
+            self.actualizar_vista_tabla(df)
+        else:
+            self.mostrar_warning("No hay tabla seleccionada para borrar una columna.")
+
+    def borrar_fila_o_columna(self):
+        # Determinar si borrar una fila o una columna según la selección actual en la tabla
+        indices_seleccionados = self.tableView.selectionModel().selectedIndexes()
+        if indices_seleccionados:
+            filas_seleccionadas = set(indice.row() for indice in indices_seleccionados)
+            columnas_seleccionadas = set(indice.column() for indice in indices_seleccionados)
+            if len(filas_seleccionadas) == 1 and len(columnas_seleccionadas) == len(self.tablas[self.current_table_name]['dataframe'].columns):
+                self.borrar_fila(list(filas_seleccionadas)[0])
+            elif len(columnas_seleccionadas) == 1 and len(filas_seleccionadas) == len(self.tablas[self.current_table_name]['dataframe'].index):
+                self.borrar_columna(list(columnas_seleccionadas)[0])
+            else:
+                self.mostrar_warning("Por favor selecciona solo una fila completa o una columna completa para borrar.")
+        else:
+            self.mostrar_warning("No hay selección para borrar.")
 
     def actualizar_vista_tabla(self, df):
         # Actualizar la vista de la tabla en la interfaz gráfica
