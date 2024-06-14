@@ -640,7 +640,10 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
             self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
             self.lineedit_nombretabla.setReadOnly(False)
         else:
-            if self.validar_datos() and self.actualizar_nombre_tabla_desde_lineedit():
+            if self.validar_datos():
+                nuevo_nombre = self.lineedit_nombretabla.text().strip()
+                if nuevo_nombre:
+                    self.actualizar_nombre_tabla_desde_lineedit()
                 self.lineedit_nombretabla.setReadOnly(True)
                 self.edit_save_button.setText("Editar")
                 self.toggle_buttons_visibility(False)

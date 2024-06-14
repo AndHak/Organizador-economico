@@ -788,28 +788,6 @@ QTabBar::tab:selected:hover {
                    </item>
                   </layout>
                  </widget>
-                 <widget class="QWidget" name="tab_total">
-                  <attribute name="title">
-                   <string>Todos los organizadores</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_7">
-                   <property name="leftMargin">
-                    <number>15</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>15</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>15</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>15</number>
-                   </property>
-                   <item row="0" column="0">
-                    <widget class="QListView" name="total_gastos_view"/>
-                   </item>
-                  </layout>
-                 </widget>
                 </widget>
                </item>
                <item row="0" column="0" colspan="5">
@@ -854,66 +832,6 @@ QHeaderView::section {
                    <string>Organizadores</string>
                   </property>
                  </column>
-                 <item>
-                  <property name="text">
-                   <string>Familia</string>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Niños</string>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Antonella</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Pepito</string>
-                    </property>
-                   </item>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Pareja</string>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Paseo</string>
-                    </property>
-                   </item>
-                  </item>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Trabajo</string>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Transporte</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Comida</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Nuevo elemento</string>
-                   </property>
-                  </item>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Viajes</string>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Brasil</string>
-                   </property>
-                  </item>
-                 </item>
                 </widget>
                </item>
                <item row="1" column="3">

@@ -18,12 +18,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
     QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QListView, QListWidget, QListWidgetItem,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QSpinBox, QStackedWidget, QTabWidget, QTableView,
-    QTextBrowser, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget)
+    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
+    QMenu, QMenuBar, QPlainTextEdit, QPushButton,
+    QScrollArea, QSizePolicy, QSpacerItem, QSpinBox,
+    QStackedWidget, QTabWidget, QTableView, QTextBrowser,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 import recurses_rc_rc
 
 class Ui_MainWindow(object):
@@ -428,33 +427,10 @@ class Ui_MainWindow(object):
         self.gridLayout_6.addWidget(self.tableView, 1, 0, 1, 1)
 
         self.tab_widget.addTab(self.tab_seleccted, "")
-        self.tab_total = QWidget()
-        self.tab_total.setObjectName(u"tab_total")
-        self.gridLayout_7 = QGridLayout(self.tab_total)
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.gridLayout_7.setContentsMargins(15, 15, 15, 15)
-        self.total_gastos_view = QListView(self.tab_total)
-        self.total_gastos_view.setObjectName(u"total_gastos_view")
-
-        self.gridLayout_7.addWidget(self.total_gastos_view, 0, 0, 1, 1)
-
-        self.tab_widget.addTab(self.tab_total, "")
 
         self.gridLayout.addWidget(self.tab_widget, 0, 5, 2, 1)
 
         self.treeWidget_organizadores = QTreeWidget(self.scrollAreaWidgetContents)
-        __qtreewidgetitem = QTreeWidgetItem(self.treeWidget_organizadores)
-        __qtreewidgetitem1 = QTreeWidgetItem(__qtreewidgetitem)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        __qtreewidgetitem2 = QTreeWidgetItem(__qtreewidgetitem)
-        QTreeWidgetItem(__qtreewidgetitem2)
-        __qtreewidgetitem3 = QTreeWidgetItem(self.treeWidget_organizadores)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        __qtreewidgetitem4 = QTreeWidgetItem(self.treeWidget_organizadores)
-        QTreeWidgetItem(__qtreewidgetitem4)
         self.treeWidget_organizadores.setObjectName(u"treeWidget_organizadores")
         self.treeWidget_organizadores.setStyleSheet(u"QTreeView {\n"
 "    background-color: #ffffff;\n"
@@ -1313,7 +1289,7 @@ class Ui_MainWindow(object):
         self.dashboard_1.toggled.connect(self.dashboard_2.setChecked)
         self.dashboard_2.toggled.connect(self.dashboard_1.setChecked)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         self.tab_widget.setCurrentIndex(0)
 
 
@@ -1348,38 +1324,8 @@ class Ui_MainWindow(object):
         self.agregar_nueva_categoria_button.setText("")
         self.lineedit_nombretabla.setText("")
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_seleccted), QCoreApplication.translate("MainWindow", u"Organizador seleccionado", None))
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_total), QCoreApplication.translate("MainWindow", u"Todos los organizadores", None))
         ___qtreewidgetitem = self.treeWidget_organizadores.headerItem()
         ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"Organizadores", None));
-
-        __sortingEnabled = self.treeWidget_organizadores.isSortingEnabled()
-        self.treeWidget_organizadores.setSortingEnabled(False)
-        ___qtreewidgetitem1 = self.treeWidget_organizadores.topLevelItem(0)
-        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"Familia", None));
-        ___qtreewidgetitem2 = ___qtreewidgetitem1.child(0)
-        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"Ni\u00f1os", None));
-        ___qtreewidgetitem3 = ___qtreewidgetitem2.child(0)
-        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"Antonella", None));
-        ___qtreewidgetitem4 = ___qtreewidgetitem2.child(1)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"Pepito", None));
-        ___qtreewidgetitem5 = ___qtreewidgetitem1.child(1)
-        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"Pareja", None));
-        ___qtreewidgetitem6 = ___qtreewidgetitem5.child(0)
-        ___qtreewidgetitem6.setText(0, QCoreApplication.translate("MainWindow", u"Paseo", None));
-        ___qtreewidgetitem7 = self.treeWidget_organizadores.topLevelItem(1)
-        ___qtreewidgetitem7.setText(0, QCoreApplication.translate("MainWindow", u"Trabajo", None));
-        ___qtreewidgetitem8 = ___qtreewidgetitem7.child(0)
-        ___qtreewidgetitem8.setText(0, QCoreApplication.translate("MainWindow", u"Transporte", None));
-        ___qtreewidgetitem9 = ___qtreewidgetitem7.child(1)
-        ___qtreewidgetitem9.setText(0, QCoreApplication.translate("MainWindow", u"Comida", None));
-        ___qtreewidgetitem10 = ___qtreewidgetitem7.child(2)
-        ___qtreewidgetitem10.setText(0, QCoreApplication.translate("MainWindow", u"Nuevo elemento", None));
-        ___qtreewidgetitem11 = self.treeWidget_organizadores.topLevelItem(2)
-        ___qtreewidgetitem11.setText(0, QCoreApplication.translate("MainWindow", u"Viajes", None));
-        ___qtreewidgetitem12 = ___qtreewidgetitem11.child(0)
-        ___qtreewidgetitem12.setText(0, QCoreApplication.translate("MainWindow", u"Brasil", None));
-        self.treeWidget_organizadores.setSortingEnabled(__sortingEnabled)
-
         self.eliminar_organizador_button.setText("")
         self.eliminar_tabla_button.setText("")
         self.nueva_columna_button.setText(QCoreApplication.translate("MainWindow", u"Nueva Columna", None))
@@ -1414,7 +1360,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(accessibility)
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Configuraciones", None))
 
-        __sortingEnabled1 = self.list_apoyo.isSortingEnabled()
+        __sortingEnabled = self.list_apoyo.isSortingEnabled()
         self.list_apoyo.setSortingEnabled(False)
         ___qlistwidgetitem = self.list_apoyo.item(0)
         ___qlistwidgetitem.setText(QCoreApplication.translate("MainWindow", u"Sugerencias", None));
@@ -1422,7 +1368,7 @@ class Ui_MainWindow(object):
         ___qlistwidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Comentarios", None));
         ___qlistwidgetitem2 = self.list_apoyo.item(2)
         ___qlistwidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Otro", None));
-        self.list_apoyo.setSortingEnabled(__sortingEnabled1)
+        self.list_apoyo.setSortingEnabled(__sortingEnabled)
 
         self.enviar_buttton_apoyo.setText(QCoreApplication.translate("MainWindow", u"Enviar", None))
         self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
