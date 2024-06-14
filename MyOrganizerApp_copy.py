@@ -1,6 +1,5 @@
 from economix_ui_ui import Ui_MainWindow
 from creacion_tabla import PandasModel
-from inputdialog import LocationDialog
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -338,6 +337,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
 
         # Limpiar la vista de la tabla
         self.tableView.setModel(None)
+        #desactiva los desencadenadores de edición en el QTableView, asegurando que la tabla no sea editable.
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
 
