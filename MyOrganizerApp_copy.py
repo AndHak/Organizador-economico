@@ -87,7 +87,62 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         #conexiones archivos menubar
         self.actionSalir.triggered.connect(QApplication.quit)
         self.actionImportar_organizador.triggered.connect(self.import_table)
+        self.actionExportar_organizador.triggered.connect(self.exportar_a_excel)
 
+        #conexion botones nueva columna nueva fila
+        self.nueva_fila_button.clicked.connect(self.nueva_fila)
+        self.nueva_columna_button.clicked.connect(self.nueva_columna)
+
+    def exportar_a_excel(self):
+        # Obtener el ítem seleccionado actualmente en el treeWidget_organizadores
+        selected_item = self.treeWidget_organizadores.currentItem()
+        if selected_item:
+            nombre_tabla = selected_item.text(0)
+            if nombre_tabla in self.tablas:
+                # Obtener el dataframe asociado a la tabla seleccionada
+                dataframe = self.tablas[nombre_tabla]['dataframe']
+                
+                # Lógica para exportar el dataframe a Excel
+                try:
+                    filename, _ = QFileDialog.getSaveFileName(self, "Guardar como...", "", "Excel Files (*.xlsx)")
+                    if filename:
+                        dataframe.to_excel(filename, index=False)
+                        self.mostrar_mensaje(f"Tabla '{nombre_tabla}' exportada exitosamente a {filename}")
+                except Exception as e:
+                    self.mostrar_mensaje(f"No se pudo exportar la tabla '{nombre_tabla}' a Excel. Error: {str(e)}")
+            else:
+                self.mostrar_mensaje(f"No se encontró la tabla '{nombre_tabla}'. Seleccione una tabla válida.")
+        else:
+            self.mostrar_mensaje("No se ha seleccionado ninguna tabla. Seleccione una tabla para exportar a Excel.")
+    
+
+    
+    def nueva_fila(self):
+        # Agregar una nueva fila vacía al DataFrame actual
+        if self.current_table_name:
+            df = self.tablas[self.current_table_name]['dataframe']
+            nueva_fila = pd.DataFrame(['']*len(df.columns), index=df.columns).T
+            df = pd.concat([df, nueva_fila], ignore_index=True)
+            self.tablas[self.current_table_name]['dataframe'] = df
+            self.actualizar_vista_tabla(df)
+        else:
+            self.mostrar_warning("No hay tabla seleccionada para agregar una fila.")
+
+    def nueva_columna(self):
+        # Agregar una nueva columna vacía al DataFrame actual
+        if self.current_table_name:
+            df = self.tablas[self.current_table_name]['dataframe']
+            nueva_columna = f'Columna {len(df.columns) + 1}'
+            df[nueva_columna] = ''
+            self.tablas[self.current_table_name]['dataframe'] = df
+            self.actualizar_vista_tabla(df)
+        else:
+            self.mostrar_warning("No hay tabla seleccionada para agregar una columna.")
+
+    def actualizar_vista_tabla(self, df):
+        # Actualizar la vista de la tabla en la interfaz gráfica
+        model = PandasModel(df)
+        self.tableView.setModel(model)
 
     def import_table(self):
         # Abre un cuadro de diálogo para seleccionar el archivo de la tabla
@@ -340,26 +395,33 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         #desactiva los desencadenadores de edición en el QTableView, asegurando que la tabla no sea editable.
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-
-
-        
-
-
+    
+    def limpiar_nuevo_organizador_page(self):
+        self.combobox_organizador.clear()
+        self.combobox_suborganizador.clear()
+        self.lineedit_nuevoorganizaor.clear()
+        self.spinbox_columnas.clear()
+        self.spinbox_filas.clear()
 
     def switch_to_dashboardPage(self):
         self.stackedWidget.setCurrentWidget(self.Dashboard_page)
+        self.limpiar_nuevo_organizador_page()
 
     def switch_to_newPage(self):
         self.stackedWidget.setCurrentWidget(self.nuevo_organizador_page)
+        self.limpiar_nuevo_organizador_page()
 
     def switch_to_supportPage(self):
         self.stackedWidget.setCurrentWidget(self.suppot_page)
+        self.limpiar_nuevo_organizador_page()
 
     def switch_to_aboutusPage(self):
         self.stackedWidget.setCurrentWidget(self.about_us_page)
+        self.limpiar_nuevo_organizador_page()
 
     def switch_to_settingsPage(self):
         self.stackedWidget.setCurrentWidget(self.Settings_page)
+        self.limpiar_nuevo_organizador_page()
 
     def mostar_creacion_de_sub_tabla(self):
         if self.checkbox_organizador.isChecked():
@@ -470,7 +532,8 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
         if selected_item:
             nombre_tabla = selected_item.text(0)
             if nombre_tabla in self.tablas:
-                # Verifica que lineedit_nombretabla esté definido
+                self.current_table_name = nombre_tabla  # Actualizar el nombre de la tabla actual
+                
                 if hasattr(self, 'lineedit_nombretabla'):
                     self.lineedit_nombretabla.setText(nombre_tabla)
 
@@ -499,6 +562,7 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
                     self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked)
                 else:
                     self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
 
     def edit_all(self):
         if self.edit_save_button.text() == "Editar":
@@ -657,6 +721,11 @@ class MyOrganizerApp(QMainWindow, Ui_MainWindow):
     
     def mostrar_warning(self, message):
         QMessageBox.warning(self, "Advertencia", message)
+
+    def mostrar_mensaje(self, message):
+        QMessageBox.information(self, "Informacion", message)
+    
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
